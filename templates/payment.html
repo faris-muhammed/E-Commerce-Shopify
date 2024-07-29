@@ -1,0 +1,458 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #098cfe;
+        }
+
+        #pay-button, #payButton {
+            display: block;
+            width: 200px;
+            height: 50px;
+            margin: 20px auto;
+            background: #098cfe;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #pay-button:hover, #payButton:hover {
+            background: #098cfe;
+        }
+
+        #orderForm {
+            margin-bottom: 20px;
+        }
+
+        #orderInput {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            width: 150px;
+            padding: 10px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Please Complete the Payment</h1>
+        <button id="pay-button">Pay with Razorpay</button>
+        <form id="orderForm">
+            <input type="text" id="orderInput" placeholder="Enter Order ID">
+            <button type="submit">Fetch Order ID</button>
+        </form>
+        <button id="payButton" style="display: none;">Pay Now</button>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      function initiatePayment(orderId) {
+        var options = {
+          key: 'rzp_test_L5qNNRXVbhmnhr', 
+          amount: 10000, 
+          currency: 'INR',
+          name: 'Shopify',
+          description: 'Payment for Order',
+          order_id: orderId,
+          handler: function(response) {
+            var paymentId = response.razorpay_payment_id;
+            var signature = response.razorpay_signature;
+            var orderId = response.razorpay_order_id;
+  
+            sendPaymentDetails(orderId, paymentId, signature);
+          },
+          prefill: {
+            name: 'Customer Name',
+            email: 'customer@example.com',
+            contact: '9999999999'
+          },
+          theme: {
+            color: '#4CFE09' 
+          }
+        };
+  
+        var rzp = new Razorpay(options);
+        rzp.open();
+      }
+
+      function sendPaymentDetails(orderId, paymentId, signature) {
+        fetch('http://localhost:3000/user/payment/confirm', {
+          method: 'POST',
+          headers: {  
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+                order_id: orderId,
+                payment_id: paymentId,
+                signature: signature
+            }),
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+      }
+  
+      document.getElementById('orderForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+  
+        var orderId = document.getElementById('orderInput').value;
+  
+        if (orderId) {
+          alert('Order ID fetched successfully: ' + orderId);
+          document.getElementById('payButton').style.display = 'block';
+        } else {
+          alert('Error fetching order ID.');
+        }
+      });
+
+      document.getElementById('payButton').addEventListener('click', function() {
+        var orderId = document.getElementById('orderInput').value;
+        initiatePayment(orderId);
+      });
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #098cfe;
+        }
+
+        #pay-button, .btn-pay {
+            display: block;
+            width: 200px;
+            height: 50px;
+            margin: 20px auto;
+            background: #098cfe;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #pay-button:hover, .btn-pay:hover {
+            background: #0a7cdc;
+        }
+
+        #orderForm {
+            margin-bottom: 20px;
+        }
+
+        #orderInput {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            width: 150px;
+            padding: 10px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Purchase</h1>
+        <p>Click the button below to proceed with the payment.</p>
+        <button class="btn-pay" id="rzp-button1">Pay with Razorpay</button>
+    </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "{{.Key}}", 
+            "amount": "{{.Amount}}", 
+            "currency": "INR",
+            "name": "Shopify",
+            "description": "{{.Product}}",
+            "order_id": "{{.Order}}",
+            "handler": function (response) {
+                var payment = response.razorpay_payment_id;
+                var order = response.razorpay_order_id;
+                var signature = response.razorpay_signature;
+                SendGin(payment, order, signature,);
+            },
+            "prefill": {
+                "name": "{{.Name}}",
+                "email": "{{.Email}}",
+                "contact": "{{.Phone}}"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response) {
+            alert(response.error.code);
+            alert(response.error.description);
+            alert(response.error.source);
+            alert(response.error.step);
+            alert(response.error.reason);
+            alert(response.error.metadata.order_id);
+            alert(response.error.metadata.payment_id);
+        });
+        function SendGin(payment, order, signature) {
+            fetch('http://localhost:3000/user/payment/confirm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    PaymentID: payment,
+                    OrderID: order,
+                    Signature: signature
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log("Error", error));
+        }
+        document.getElementById('rzp-button1').onclick = function(e) {
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #098cfe;
+        }
+
+        #pay-button, .btn-pay {
+            display: block;
+            width: 200px;
+            height: 50px;
+            margin: 20px auto;
+            background: #098cfe;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #pay-button:hover, .btn-pay:hover {
+            background: #0a7cdc;
+        }
+
+        #orderForm {
+            margin-bottom: 20px;
+        }
+
+        #orderInput {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            width: 150px;
+            padding: 10px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Your Purchase</h1>
+        <p>Click the button below to proceed with the payment.</p>
+        <button class="btn-pay" id="rzp-button1">Pay with Razorpay</button>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "{{.Key}}", 
+            "amount": "{{.Amount}}", 
+            "currency": "INR",
+            "name": "Shopify",
+            "description": "{{.Product}}",
+            "order_id": "{{.Order}}",
+            "handler": function (response) {
+                var payment = response.razorpay_payment_id;
+                var order = response.razorpay_order_id;
+                var signature = response.razorpay_signature;
+                SendGin(payment, order, signature, 'success');
+            },
+            "prefill": {
+                "name": "{{.Name}}",
+                "email": "{{.Email}}",
+                "contact": "{{.Phone}}"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+    
+        var rzp1 = new Razorpay(options);
+    
+        rzp1.on('payment.failed', function (response) {
+            console.error("Payment failed: ", response.error);
+            SendGin(
+                response.error.metadata.payment_id,
+                response.error.metadata.order_id,
+                response.error.metadata.signature,
+                'failed'
+            );
+        });
+    
+        function SendGin(payment, order, signature, status) {
+            fetch('http://localhost:3000/user/payment/confirm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    PaymentID: payment,
+                    OrderID: order,
+                    Signature: signature,
+                    Status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error("Error", error));
+        }
+    
+        document.getElementById('rzp-button1').onclick = function(e) {
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+</body>  
+</html>  
