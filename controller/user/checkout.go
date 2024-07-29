@@ -207,8 +207,7 @@ func CheckOut(c *gin.Context) {
 			if err != nil {
 				c.JSON(401, gin.H{
 					"status": "Fail",
-					"error":  "failed to store payment data",
-					"err":    err.Error(),
+					"error":  "Failed to store payment data",
 					"code":   401,
 				})
 				tx.Rollback()
