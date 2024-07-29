@@ -232,8 +232,7 @@ func CheckOut(c *gin.Context) {
 			tx.Rollback()
 			c.JSON(500, gin.H{
 				"status": "Fail",
-				"error":  "failed to place order",
-				"err":    err.Error(),
+				"error":  "Failed to place order",
 				"code":   500,
 			})
 			return
@@ -292,7 +291,7 @@ func CheckOut(c *gin.Context) {
 		tx.Rollback()
 		c.JSON(500, gin.H{
 			"status": "Fail",
-			"error":  "failed to commit transaction",
+			"error":  "Failed to commit transaction",
 			"code":   500,
 		})
 		return
