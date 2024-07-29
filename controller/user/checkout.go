@@ -257,7 +257,7 @@ func CheckOut(c *gin.Context) {
 			tx.Rollback()
 			c.JSON(501, gin.H{
 				"status": "Fail",
-				"error":  "failed to store items details",
+				"error":  "Failed to store items details",
 				"code":   501,
 			})
 			return
@@ -282,7 +282,7 @@ func CheckOut(c *gin.Context) {
 		tx.Rollback()
 		c.JSON(400, gin.H{
 			"status": "Fail",
-			"error":  "faild to delete datas in cart.",
+			"error":  "Faild to delete datas in cart.",
 			"code":   400,
 		})
 		return
