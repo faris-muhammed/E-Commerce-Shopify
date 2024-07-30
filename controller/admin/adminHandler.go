@@ -86,7 +86,7 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 	//Setting token inside cookie
-	c.SetCookie("jwtTokenAdmin", token, int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
+	c.SetCookie("jwtTokenAdmin", token, int((time.Hour * 1).Seconds()), "", "buynowbazaar.online", false, false)
 
 	c.JSON(200, gin.H{
 		"status": "Success",
@@ -98,7 +98,7 @@ func AdminLogin(c *gin.Context) {
 
 func AdminLogout(c *gin.Context) {
 	// Clear JWT token cookie
-	c.SetCookie("jwtTokenAdmin", "", -1, "/", "", false, true)
+	c.SetCookie("jwtTokenAdmin", "", -1, "", "buynowbazaar.online", false, false)
 
 	c.JSON(200, gin.H{
 		"status":  "Success",

@@ -367,7 +367,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 	fmt.Println(userStore.Id, userStore.Email)
-	c.SetCookie("jwtTokenUser", token, int(time.Now().Add(1*time.Hour).Unix()), "/", "", false, true)
+	c.SetCookie("jwtTokenUser", token, int((time.Hour * 1).Seconds()), "", "buynowbazaar.online", false, false)
 	fmt.Println("Token", token)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
@@ -380,7 +380,7 @@ func UserLogin(c *gin.Context) {
 
 func UserLogout(c *gin.Context) {
 	// Clear JWT token cookie
-	c.SetCookie("jwtTokenUser", "", -1, "/", "", false, true)
+	c.SetCookie("jwtTokenUser", "", -1, "", "buynowbazaar.online", false, false)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "success",
