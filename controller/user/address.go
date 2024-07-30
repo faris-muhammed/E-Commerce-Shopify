@@ -8,8 +8,9 @@ import (
 
 // =================== List Address ==================
 func ListAddress(c *gin.Context) {
+	requestId:=c.GetUint("userid")
 	var address []model.UserAddress
-	if err := initializer.DB.Find(&address).Error; err != nil {
+	if err := initializer.DB.Find(&address,"id=?",requestId).Error; err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
 			"error":  "Failed to fetch products",

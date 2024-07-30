@@ -242,11 +242,19 @@ func RemoveCart(c *gin.Context) {
 		})
 		return
 	}
+	var showData []gin.H
+	for _, v := range cart {
+		showData = append(showData, gin.H{
+			"id":         v.Id,
+			"product_id": v.ProductId,
+			"price":      v.Product.Price,
+		})
+	}
 	c.JSON(200, gin.H{
-		"status": "Success",
-		"error":  "Cart removed successfully",
-		"code":   200,
-		"id":     cart,
+		"status":  "Success",
+		"message": "Cart removed successfully",
+		"code":    200,
+		"data":    showData,
 	})
 }
 
