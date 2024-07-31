@@ -122,7 +122,8 @@ func CreateInvoice(c *gin.Context) {
 	pdf.CellFormat(150, 10, "Total Amount: ", "1", 0, "R", true, 0, "")
 	pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", totalAmount), "1", 0, "R", true, 0, "")
 
-	dirPath := "./invoices"
+	// Create the directory if it doesn't exist
+	dirPath := "C:/Downloads/invoices"
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
@@ -133,6 +134,7 @@ func CreateInvoice(c *gin.Context) {
 		return
 	}
 
+	// Save the PDF to the local path
 	pdfPath := filepath.Join(dirPath, "invoice.pdf")
 	if err := pdf.OutputFileAndClose(pdfPath); err != nil {
 		c.JSON(500, gin.H{

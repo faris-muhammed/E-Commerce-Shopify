@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -84,8 +86,18 @@ func SalesReportExcel(c *gin.Context) {
 	totalRow.AddCell().Value = "Total Amount:"
 	totalRow.AddCell().Value = fmt.Sprintf("%.2f", totalAmount)
 
-	// =============== save exel file into local ============
-	excelPath := "D:/Brototype/Shopify/sales_report.xlsx"
+	// Save Excel file to local path
+	dirPath := "C:/Downloads/reports"
+	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+		c.JSON(500, gin.H{
+			"status": "Fail",
+			"error":  "Failed to create directory",
+			"code":   500,
+		})
+		return
+	}
+
+	excelPath := filepath.Join(dirPath, "sales_report.xlsx")
 	if err := file.Save(excelPath); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
@@ -138,7 +150,17 @@ func SalesReportPDF(c *gin.Context) {
 	}
 
 	// ============== save doc into local ================
-	pdfPath := "D:/Brototype/Shopify/sales_report.pdf"
+	dirPath := "C:/Downloads/reports"
+	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+		c.JSON(500, gin.H{
+			"status": "Fail",
+			"error":  "Failed to create directory",
+			"code":   500,
+		})
+		return
+	}
+
+	pdfPath := filepath.Join(dirPath, "sales_report.pdf")
 	if err := pdf.OutputFileAndClose(pdfPath); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
