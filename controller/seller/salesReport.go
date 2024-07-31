@@ -51,7 +51,7 @@ func SalesReportExcel(c *gin.Context) {
 		})
 		return
 	}
-	//============ create new exel file ==============
+	// Create new Excel file
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Sales Report")
 	if err != nil {
@@ -70,7 +70,7 @@ func SalesReportExcel(c *gin.Context) {
 		cell.Value = header
 	}
 
-	//============= add sales data ===============
+	// Add sales data
 	var totalAmount float32
 	for _, sale := range OrderData {
 		row := sheet.AddRow()
@@ -87,7 +87,7 @@ func SalesReportExcel(c *gin.Context) {
 	totalRow.AddCell().Value = fmt.Sprintf("%.2f", totalAmount)
 
 	// Save Excel file to local path
-	dirPath := "C:/Downloads/reports"
+	dirPath := "reports"
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
@@ -106,7 +106,7 @@ func SalesReportExcel(c *gin.Context) {
 		})
 		return
 	}
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", excelPath))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "sales_report.xlsx"))
 	c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	c.File(excelPath)
 
@@ -115,7 +115,6 @@ func SalesReportExcel(c *gin.Context) {
 		"message": "Excel file generated and sent successfully",
 		"code":    201,
 	})
-
 }
 
 func SalesReportPDF(c *gin.Context) {
@@ -129,7 +128,7 @@ func SalesReportPDF(c *gin.Context) {
 		})
 		return
 	}
-	// ======= create new pdf doc =========
+	// Create new PDF doc
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 12)
@@ -140,7 +139,7 @@ func SalesReportPDF(c *gin.Context) {
 	}
 	pdf.Ln(-1)
 
-	// ========== add sales data ===========
+	// Add sales data
 	for _, sale := range OrderData {
 		pdf.Cell(50, 10, strconv.Itoa(int(sale.OrderId)))
 		pdf.Cell(50, 10, sale.Product.ProductName)
@@ -149,8 +148,8 @@ func SalesReportPDF(c *gin.Context) {
 		pdf.Ln(-1)
 	}
 
-	// ============== save doc into local ================
-	dirPath := "C:/Downloads/reports"
+	// Save PDF doc to local path
+	dirPath := "reports"
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
@@ -170,7 +169,7 @@ func SalesReportPDF(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", pdfPath))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "sales_report.pdf"))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(pdfPath)
 
