@@ -13,7 +13,7 @@ import (
 
 func CreateInvoice(c *gin.Context) {
 	userID := c.GetUint("userid")
-	orderId := c.Param("id")
+	orderId := c.Param("ID")
 	var user model.UserModel
 	if err := initializer.DB.First(&user, userID).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -24,17 +24,16 @@ func CreateInvoice(c *gin.Context) {
 		return
 	}
 	var orderItem []model.OrderItems
-	if err := initializer.DB.Where("order_id = ? AND order_status NOT IN (?,?)", orderId, "Cancelled", "pending").Preload("Product").Preload("Order.Address").Find(&orderItem).Error; err != nil {
+	if err := initializer.DB.Where("order_id = ? AND order_status!=?", orderId, "cancelled").Preload("Product").Preload("Order.Address").Find(&orderItem).Error; err != nil {
 		c.JSON(503, gin.H{
 			"status": "Fail",
 			"error":  "Failed to fetch orders",
-			"err":    err.Error(),
 			"code":   503,
 		})
 		return
 	}
 	for _, order := range orderItem {
-		if order.OrderStatus != "Delivered" {
+		if order.OrderStatus != "delivered" {
 			c.JSON(202, gin.H{
 				"status":  "Fail",
 				"message": "Order not Delivered ",
@@ -76,11 +75,12 @@ func CreateInvoice(c *gin.Context) {
 		break
 	}
 
+	pdf.Image("./assets/logo.png", 160, 10, 30, 20, false, "", 0, "")
 	pdf.SetXY(10, 20)
-	pdf.CellFormat(170, 30, "Shopify", "", 0, "R", false, 0, "")
+	pdf.CellFormat(170, 30, "Hilofy", "", 0, "R", false, 0, "")
 	pdf.SetFont("Arial", "", 12)
-	pdf.CellFormat(12, 40, "Calicut", "", 0, "R", false, 0, "")
-	pdf.CellFormat(12, 50, "2nd floor ,Ph: 0494 -24 36545", "", 0, "R", false, 0, "")
+	pdf.CellFormat(12, 40, "dilka , rashka del", "", 0, "R", false, 0, "")
+	pdf.CellFormat(12, 50, "15th floor ,Ph: +324 36545", "", 0, "R", false, 0, "")
 	pdf.Ln(60)
 
 	pdf.SetFillColor(220, 220, 220)
@@ -121,28 +121,26 @@ func CreateInvoice(c *gin.Context) {
 	pdf.CellFormat(150, 10, "Total Amount: ", "1", 0, "R", true, 0, "")
 	pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", totalAmount), "1", 0, "R", true, 0, "")
 
-	if err := os.MkdirAll("D:/Reports", os.ModePerm); err != nil {
+	pdfDir := "./invoices"
+	if err := os.MkdirAll(pdfDir, os.ModePerm); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
-			"error":  "Failed to create directory",
-			"err":    err.Error(),
+			"error":  "Failed to create directory for PDF files",
 			"code":   500,
 		})
 		return
 	}
-
-	pdfPath := "D:/Reports/invoice.pdf"
+	pdfPath := fmt.Sprintf("%s/invoice_%s.pdf", pdfDir, orderId)
 	if err := pdf.OutputFileAndClose(pdfPath); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
 			"error":  "Failed to generate PDF file",
-			"err":    err.Error(),
 			"code":   500,
 		})
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "invoice.pdf"))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", fmt.Sprintf("invoice_%s.pdf", orderId)))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(pdfPath)
 
