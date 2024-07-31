@@ -232,6 +232,7 @@ func CheckOut(c *gin.Context) {
 			c.JSON(500, gin.H{
 				"status": "Fail",
 				"error":  "Failed to place order",
+				"err":    err.Error(),
 				"code":   500,
 			})
 			return
