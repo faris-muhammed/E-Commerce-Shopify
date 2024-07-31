@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ import (
 
 func CreateInvoice(c *gin.Context) {
 	userID := c.GetUint("userid")
-	orderId := c.Param("ID")
+	orderId := c.Param("id")
 	var user model.UserModel
 	if err := initializer.DB.First(&user, userID).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -24,19 +25,23 @@ func CreateInvoice(c *gin.Context) {
 		return
 	}
 	var orderItem []model.OrderItems
-	if err := initializer.DB.Where("order_id = ? AND order_status!=?", orderId, "cancelled").Preload("Product").Preload("Order.Address").Find(&orderItem).Error; err != nil {
+	if err := initializer.DB.Where("order_id = ? AND order_status NOT IN (?, ?)", orderId, "Cancelled", "pending").
+		Preload("Product").
+		Preload("Order.Address").
+		Find(&orderItem).Error; err != nil {
 		c.JSON(503, gin.H{
 			"status": "Fail",
 			"error":  "Failed to fetch orders",
+			"err":    err.Error(),
 			"code":   503,
 		})
 		return
 	}
 	for _, order := range orderItem {
-		if order.OrderStatus != "delivered" {
+		if order.OrderStatus != "Delivered" {
 			c.JSON(202, gin.H{
 				"status":  "Fail",
-				"message": "Order not Delivered ",
+				"message": "Order not Delivered",
 				"code":    202,
 			})
 			return
@@ -44,7 +49,15 @@ func CreateInvoice(c *gin.Context) {
 	}
 	var order model.Order
 	var Discount float64
-	initializer.DB.First(&order, orderId)
+	if err := initializer.DB.First(&order, orderId).Error; err != nil {
+		c.JSON(500, gin.H{
+			"status": "Fail",
+			"error":  "Failed to fetch order",
+			"err":    err.Error(),
+			"code":   500,
+		})
+		return
+	}
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
@@ -75,12 +88,11 @@ func CreateInvoice(c *gin.Context) {
 		break
 	}
 
-	pdf.Image("./assets/logo.png", 160, 10, 30, 20, false, "", 0, "")
 	pdf.SetXY(10, 20)
-	pdf.CellFormat(170, 30, "Hilofy", "", 0, "R", false, 0, "")
+	pdf.CellFormat(170, 30, "Shopify", "", 0, "R", false, 0, "")
 	pdf.SetFont("Arial", "", 12)
-	pdf.CellFormat(12, 40, "dilka , rashka del", "", 0, "R", false, 0, "")
-	pdf.CellFormat(12, 50, "15th floor ,Ph: +324 36545", "", 0, "R", false, 0, "")
+	pdf.CellFormat(12, 40, "Calicut", "", 0, "R", false, 0, "")
+	pdf.CellFormat(12, 50, "2nd floor ,Ph: 0494 -24 36545", "", 0, "R", false, 0, "")
 	pdf.Ln(60)
 
 	pdf.SetFillColor(220, 220, 220)
@@ -108,33 +120,36 @@ func CreateInvoice(c *gin.Context) {
 	totalAmount -= float64(Discount)
 	if Discount > 0 {
 		pdf.CellFormat(150, 10, "Discount:", "1", 0, "R", true, 0, "")
-		pdf.CellFormat(40, 10, fmt.Sprintf("%2.f", Discount), "1", 0, "R", true, 0, "")
+		pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", Discount), "1", 0, "R", true, 0, "")
 		pdf.Ln(10)
 	}
 	if order.ShippingCharge > 0 {
 		totalAmount += float64(order.ShippingCharge)
 		pdf.CellFormat(150, 10, "Shipping charge:", "1", 0, "R", true, 0, "")
-		pdf.CellFormat(40, 10, fmt.Sprintf("%2.f", order.ShippingCharge), "1", 0, "R", true, 0, "")
+		pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", order.ShippingCharge), "1", 0, "R", true, 0, "")
 		pdf.Ln(10)
 	}
 	Discount = 0
 	pdf.CellFormat(150, 10, "Total Amount: ", "1", 0, "R", true, 0, "")
 	pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", totalAmount), "1", 0, "R", true, 0, "")
 
-	pdfDir := "./invoices"
+	// Define the path dynamically using a relative path
+	pdfDir := "invoices"
 	if err := os.MkdirAll(pdfDir, os.ModePerm); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
-			"error":  "Failed to create directory for PDF files",
+			"error":  "Failed to create directory",
+			"err":    err.Error(),
 			"code":   500,
 		})
 		return
 	}
-	pdfPath := fmt.Sprintf("%s/invoice_%s.pdf", pdfDir, orderId)
+	pdfPath := filepath.Join(pdfDir, fmt.Sprintf("invoice_%s.pdf", orderId))
 	if err := pdf.OutputFileAndClose(pdfPath); err != nil {
 		c.JSON(500, gin.H{
 			"status": "Fail",
 			"error":  "Failed to generate PDF file",
+			"err":    err.Error(),
 			"code":   500,
 		})
 		return
