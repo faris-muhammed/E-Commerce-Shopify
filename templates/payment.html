@@ -432,7 +432,7 @@
         });
     
         function SendGin(payment, order, signature, status) {
-            fetch('http://localhost:8080/user/payment/confirm', {
+            fetch('https://localhost:3000/user/payment/confirm', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
