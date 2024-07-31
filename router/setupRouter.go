@@ -1,6 +1,8 @@
 package router
 
 import (
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -9,13 +11,16 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	config := cors.Config{
+		AllowOrigins:     []string{"https://buynowbazaar.online"},
+		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-	}))
+		MaxAge:           12 * time.Hour,
+	}
+	r.Use(cors.New(config))
+
 	SetupMiddleware(r)
 	SetupRoutes(r)
 	SetupTemplates(r)
