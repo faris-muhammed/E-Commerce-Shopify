@@ -432,6 +432,12 @@
         });
     
         function SendGin(payment, order, signature, status) {
+            console.log("Sending payment confirmation to server:", {
+                PaymentID: payment,
+                OrderID: order,
+                Signature: signature,
+                Status: status
+            });
             fetch('https://localhost:3000/user/payment/confirm', {
                 method: 'POST',
                 headers: {
@@ -445,8 +451,8 @@
                 })
             })
             .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error("Error", error));
+            .then(data => console.log("Response from server:",data))
+            .catch(error => console.error("Error sending payment confirmation", error));
         }
 
         document.getElementById('rzp-button1').onclick = function(e) {
