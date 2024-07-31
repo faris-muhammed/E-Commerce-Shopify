@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -119,6 +120,16 @@ func CreateInvoice(c *gin.Context) {
 	Discount = 0
 	pdf.CellFormat(150, 10, "Total Amount: ", "1", 0, "R", true, 0, "")
 	pdf.CellFormat(40, 10, fmt.Sprintf("%.2f", totalAmount), "1", 0, "R", true, 0, "")
+
+	if err := os.MkdirAll("D:/Reports", os.ModePerm); err != nil {
+		c.JSON(500, gin.H{
+			"status": "Fail",
+			"error":  "Failed to create directory",
+			"err":    err.Error(),
+			"code":   500,
+		})
+		return
+	}
 
 	pdfPath := "D:/Reports/invoice.pdf"
 	if err := pdf.OutputFileAndClose(pdfPath); err != nil {
