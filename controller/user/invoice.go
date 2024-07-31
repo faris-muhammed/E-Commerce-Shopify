@@ -142,7 +142,7 @@ func CreateInvoice(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", pdfPath))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "invoice.pdf"))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(pdfPath)
 
