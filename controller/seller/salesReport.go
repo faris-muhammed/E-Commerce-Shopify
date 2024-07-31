@@ -51,8 +51,7 @@ func SalesReportExcel(c *gin.Context) {
 		})
 		return
 	}
-
-	// Create new Excel file
+	//============ create new exel file ==============
 	file := xlsx.NewFile()
 	sheet, err := file.AddSheet("Sales Report")
 	if err != nil {
@@ -71,7 +70,7 @@ func SalesReportExcel(c *gin.Context) {
 		cell.Value = header
 	}
 
-	// Add sales data
+	//============= add sales data ===============
 	var totalAmount float32
 	for _, sale := range OrderData {
 		row := sheet.AddRow()
@@ -107,18 +106,16 @@ func SalesReportExcel(c *gin.Context) {
 		})
 		return
 	}
-
-	// Serve the file for download
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filepath.Base(excelPath)))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", excelPath))
 	c.Writer.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	c.File(excelPath)
 
-	// Return JSON response
 	c.JSON(201, gin.H{
 		"status":  "Success",
 		"message": "Excel file generated and sent successfully",
 		"code":    201,
 	})
+
 }
 
 func SalesReportPDF(c *gin.Context) {
