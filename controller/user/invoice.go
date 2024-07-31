@@ -125,6 +125,7 @@ func CreateInvoice(c *gin.Context) {
 		c.JSON(500, gin.H{
 			"status": "Fail",
 			"error":  "Failed to generate PDF file",
+			"err":    err.Error(),
 			"code":   500,
 		})
 		return
