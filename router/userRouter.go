@@ -53,6 +53,5 @@ func UserGroup(r *gin.RouterGroup) {
 
 	//=============== Invoice =================
 	r.GET("/order/invoice/:id", middleware.AuthMiddleware(RoleUser), controller.CreateInvoice)
-	r.GET("/order/invoice/:id", middleware.AuthMiddleware(RoleUser), controller.CreateInvoice)
 
 }

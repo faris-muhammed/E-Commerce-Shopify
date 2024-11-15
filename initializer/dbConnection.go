@@ -1,3 +1,30 @@
+// package initializer
+
+// import (
+// 	"fmt"
+// 	"os"
+
+// 	"gorm.io/driver/postgres"
+// 	"gorm.io/gorm"
+// 	"main.go/model"
+// )
+
+// var DB *gorm.DB
+
+// func DBconnect() {
+// 	// connecting database
+// 	dsn := os.Getenv("DSN")
+
+// 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+// 	if err != nil {
+// 		panic("Failed to connect database")
+// 	}
+// 	DB = db
+// 	if err := DB.AutoMigrate(&model.UserModel{}, &model.AdminModel{}, &model.SellerModel{}, &model.ProductDetails{}, &model.Category{}, &model.UserAddress{}, &model.Cart{}, &model.Order{}, &model.OrderItems{}, model.OTPDetails{}, model.Coupon{}, model.Wishlist{}, model.Wallet{}, model.PaymentDetails{}, model.OfferProduct{}, model.OfferCategory{}); err != nil {
+// 		fmt.Printf("Error migrating database %v: ", err)
+// 	}
+// }
+
 package initializer
 
 import (
@@ -11,16 +38,19 @@ import (
 
 var DB *gorm.DB
 
-func DBconnect() {
-	// connecting database
+func DBconnect()  {
+	// Read environment variables for connection details
 	dsn := os.Getenv("DSN")
-
+	// Open the database connection
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Failed to connect database")
+		 panic("Failed to connect to database")
 	}
+
 	DB = db
+	// AutoMigrate models to the database
 	if err := DB.AutoMigrate(&model.UserModel{}, &model.AdminModel{}, &model.SellerModel{}, &model.ProductDetails{}, &model.Category{}, &model.UserAddress{}, &model.Cart{}, &model.Order{}, &model.OrderItems{}, model.OTPDetails{}, model.Coupon{}, model.Wishlist{}, model.Wallet{}, model.PaymentDetails{}, model.OfferProduct{}, model.OfferCategory{}); err != nil {
-		fmt.Printf("Error migrating database %v: ", err)
+		 fmt.Printf("Error migrating database: %v", err)
 	}
+	
 }

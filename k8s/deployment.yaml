@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: farismuhd/myapp:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_NAME
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_PORT
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: POSTGRES_URL
+            - name: APPEMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: APPEMAIL
+            - name: APPPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: APPPASSWORD
+            - name: SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: SECRETKEY
+            - name: RAZOR_PAY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: RAZOR_PAY_KEY
+            - name: RAZOR_PAY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: myapp-secret
+                  key: RAZOR_PAY_SECRET
+      tolerations:
+        - key: "node.cloudprovider.kubernetes.io/uninitialized"
+          operator: "Exists"
+          effect: "NoSchedule"
